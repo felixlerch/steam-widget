@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${name}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/css/widget.css" />
+</head>
+<body>
+    <a th:href="${profilelink}">
+        <div class="container front"></div>
+    </a>
+    <div class="container">
+        <div class="widget">
+            <img th:src="${profilepic}" alt="Profile" class="profile-picture" width="50" height="50">
+            <div class="profile-info">
+                <div th:text="${name}" class="username"></div>
+                <div th:text="${game}" class="game-playing"></div>
+            </div>
+            <img src="/img/steam_logo.svg" alt="Steam" class="steam-logo">
+        </div>
+    </div>
+</body>
+</html>
