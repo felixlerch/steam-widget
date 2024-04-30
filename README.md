@@ -23,6 +23,21 @@ HTML:
 <iframe src="https://steam-widget.com/widget?id=<Steam64Id>" style="border: 0" width="325" height="75"></iframe>
 ```
 
+## Metrics
+
+### Profile Metrics
+
+Link:
+```
+https://steam-widget.com/metric?id=<Steam64Id>
+```
+
+There are formats for this endpoint:
+- Accept: \*/\*
+  - Outputs only the hits to this users widget
+- Accept: application/json
+  - Outputs the profile metric in json format
+
 ## Credits
 
 - [Felix Lerch](https://github.com/felixlerch)
