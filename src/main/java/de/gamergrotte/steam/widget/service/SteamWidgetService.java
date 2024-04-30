@@ -11,9 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class SteamWebAPIService {
+public class SteamWidgetService {
 
     @Autowired
     private SteamWebAPI api;
@@ -41,4 +42,18 @@ public class SteamWebAPIService {
         }
     }
 
+    public long getHitByProfile(String steamId) {
+        Optional<Profile> profileOptional = repository.findById(steamId);
+        if (profileOptional.isPresent()) {
+            return profileOptional.get().getHits();
+        } else {
+            return 0;
+        }
+    }
+
+
+    public Profile getProfile(String steamId) {
+        Optional<Profile> profileOptional = repository.findById(steamId);
+        return profileOptional.orElseGet(Profile::new);
+    }
 }
