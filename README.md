@@ -5,22 +5,39 @@ This is a small Spring Boot Service for getting a small Steam profile widget / b
 
 ## Usage
 
-### URL Structure
+### Image Version
 
 Link:
 ```
-https://steam-widget.com/widget?id=<Steam64Id>
+https://steam-widget.com/widget/img?id=<Steam64Id>
 ```
 
 Example:
 
-https://steam-widget.com/widget?id=76561198120613721
+https://steam-widget.com/widget/img?id=76561198120613721
 
-### Embedded
+<img src="https://steam-widget.com/widget/img?id=76561198120613721" width="350" height="75">
+
+### HTML Version
+
+Link:
+```
+https://steam-widget.com/widget/html?id=<Steam64Id>
+```
+
+Example:
+
+https://steam-widget.com/widget/html?id=76561198120613721
+
+## Embedded
 
 HTML:
 ```HTML
-<iframe src="https://steam-widget.com/widget?id=<Steam64Id>" style="border: 0" width="325" height="75"></iframe>
+<img src="https://steam-widget.com/widget/img?id=<Steam64Id>" width="350" height="75">
+```
+
+```HTML
+<iframe src="https://steam-widget.com/widget/html?id=<Steam64Id>" style="border: 0" width="325" height="75"></iframe>
 ```
 
 ## Metrics
