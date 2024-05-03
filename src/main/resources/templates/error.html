@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Page</title>
+    <style>
+        body {
+            background-color: #171a21;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .error-container {
+            text-align: center;
+        }
+        .error-code {
+            font-size: 5em;
+            font-weight: bold;
+        }
+        .error-message {
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <div th:text="${status}" class="error-code"></div>
+    <div th:text="${error}" class="error-message">Something went wrong</div>
+</div>
+</body>
+</html>
