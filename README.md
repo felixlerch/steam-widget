@@ -5,11 +5,13 @@ This is a small Spring Boot Service for getting a small Steam profile widget / b
 
 ## Usage
 
+For the SteamId you can use the SteamID64, customURL, CommunityID.
+
 ### Image Version
 
 Link:
 ```
-https://steam-widget.com/widget/img?id=<Steam64Id>
+https://steam-widget.com/widget/img?id=<SteamId>
 ```
 
 Example:
@@ -22,7 +24,7 @@ https://steam-widget.com/widget/img?id=76561198120613721
 
 Link:
 ```
-https://steam-widget.com/widget/html?id=<Steam64Id>
+https://steam-widget.com/widget/html?id=<SteamId>
 ```
 
 Example:
@@ -33,11 +35,11 @@ https://steam-widget.com/widget/html?id=76561198120613721
 
 HTML:
 ```HTML
-<img src="https://steam-widget.com/widget/img?id=<Steam64Id>" width="350" height="75">
+<img src="https://steam-widget.com/widget/img?id=<SteamId>" width="350" height="75">
 ```
 
 ```HTML
-<iframe src="https://steam-widget.com/widget/html?id=<Steam64Id>" style="border: 0" width="325" height="75"></iframe>
+<iframe src="https://steam-widget.com/widget/html?id=<SteamId>" style="border: 0" width="325" height="75"></iframe>
 ```
 
 ## Metrics
@@ -48,6 +50,8 @@ Link:
 ```
 https://steam-widget.com/metric?id=<Steam64Id>
 ```
+
+Only use the Steam64Id for getting metrics about a profile.
 
 There are formats for this endpoint:
 - Accept: \*/\*

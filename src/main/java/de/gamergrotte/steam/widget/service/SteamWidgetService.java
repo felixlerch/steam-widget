@@ -3,7 +3,9 @@ package de.gamergrotte.steam.widget.service;
 import com.lukaspradel.steamapi.core.exception.SteamApiException;
 import com.lukaspradel.steamapi.data.json.playersummaries.GetPlayerSummaries;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
+import com.lukaspradel.steamapi.data.json.resolvevanityurl.ResolveVanityURL;
 import com.lukaspradel.steamapi.webapi.request.GetPlayerSummariesRequest;
+import com.lukaspradel.steamapi.webapi.request.ResolveVanityUrlRequest;
 import de.gamergrotte.steam.widget.component.SteamWebAPI;
 import de.gamergrotte.steam.widget.entity.Profile;
 import de.gamergrotte.steam.widget.repository.ProfileRepository;
@@ -28,11 +30,20 @@ public class SteamWidgetService {
     private ProfileRepository repository;
 
     public Player getUserBySteamId(String steamId) throws SteamApiException {
-        GetPlayerSummariesRequest request = new GetPlayerSummariesRequest.GetPlayerSummariesRequestBuilder(List.of(steamId)).buildRequest();
+        String id = steamId;
+        if (!(id.matches("[0-9]+")) && id.length() != 17) {
+            if (id.contains("https://steamcommunity.com/id/")) {
+                id = id.replaceAll("https://steamcommunity.com/id/", "").replaceAll("/", "");
+            }
+            ResolveVanityUrlRequest request = new ResolveVanityUrlRequest.ResolveVanityUrlRequestBuilder(id).buildRequest();
+            ResolveVanityURL vanityURL = api.getClient().processRequest(request);
+            id = vanityURL.getResponse().getSteamid();
+        }
+        GetPlayerSummariesRequest request = new GetPlayerSummariesRequest.GetPlayerSummariesRequestBuilder(List.of(id == null ? steamId : id)).buildRequest();
         GetPlayerSummaries playerSummaries = api.getClient().<GetPlayerSummaries> processRequest(request);
         List<Player> players = playerSummaries.getResponse().getPlayers();
         if (!players.isEmpty()) {
-            addHitToProfile(steamId, players.getFirst().getPersonaname());
+            addHitToProfile(id, players.getFirst().getPersonaname());
             return players.getFirst();
         }
         return new Player();
