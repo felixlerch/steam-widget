@@ -69,6 +69,19 @@ public class SteamWidgetService {
         } else {
             this.drawString(image, player.getPersonaname(), "ARIAL", Font.BOLD, "#ffffff", 200, 725, 450);
         }
+        
+        this.drawStateDot(image, player);
+    }
+    
+    private void drawStateDot(BufferedImage image, Player player) {
+        Graphics2D g = (Graphics2D) image.getGraphics();
+        
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        g.setColor(player.getAdditionalProperties().getOrDefault("gameextrainfo", "") != "" ? Color.GREEN : player.getPersonastate() == 3 ? Color.YELLOW : player.getPersonastate() == 2 ? Color.RED : player.getPersonastate() == 1 ? Color.BLUE : Color.GRAY);
+        g.fillOval(3350, 600, 100, 100);
+        
+        g.dispose();
     }
 
     private void drawString(BufferedImage image, String display, String font, int style, String hexColor, Integer size, Integer x, Integer y) {

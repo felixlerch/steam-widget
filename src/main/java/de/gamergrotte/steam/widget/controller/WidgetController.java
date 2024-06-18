@@ -29,6 +29,7 @@ public class WidgetController {
         model.addAttribute("profilepic", player.getAvatarmedium());
         model.addAttribute("name", player.getPersonaname());
         model.addAttribute("game", player.getAdditionalProperties().getOrDefault("gameextrainfo", ""));
+        model.addAttribute("statecolor", (player.getAdditionalProperties().getOrDefault("gameextrainfo", "") != "" ? "green" : player.getPersonastate() == 3 ? "yellow" : player.getPersonastate() == 2 ? "red" : player.getPersonastate() == 1 ? "blue" : "grey"));
         return "widget";
     }
 
