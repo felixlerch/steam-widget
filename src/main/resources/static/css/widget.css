@@ -51,3 +51,11 @@ body {
     height: auto; /* maintain aspect ratio */
     fill: #c7d5e0;
 }
+.dot {
+    position: absolute;
+    bottom: 5px; /* distance from bottom */
+    right: 5px; /* distance from right */
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
