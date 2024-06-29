@@ -3,6 +3,14 @@ Steam Profile Widget / Badge
 
 This is a small Spring Boot Service for getting a small Steam profile widget / badge for every public Steam profile.
 
+## Generator Page
+
+For easy use, you can use the generator page by putting in your SteamID64, customURL, CommunityID.
+
+Generator Page:
+
+https://steam-widget.com
+
 ## Usage
 
 For the SteamId you can use the SteamID64, customURL, CommunityID.
