@@ -9,6 +9,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class for Steam API properties.
+ * This class is responsible for mapping the Steam API properties defined in the application's configuration
+ * files (e.g., application.properties or application.yml) to Java objects. It also scans for components
+ * within the same package as the SteamWebAPI class.
+ */
 @Configuration
 @ConfigurationProperties(prefix = "steam.api")
 @ComponentScan(basePackageClasses = SteamWebAPI.class)
