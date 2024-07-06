@@ -12,7 +12,7 @@ public interface ProfileRepository extends JpaRepository<Profile, String>, JpaSp
 
     @Modifying
     @Transactional
-    @Query(value = "update Profile p set p.hits = p.hits + 1 where p.steam64id = :steam64Id")
-    void incrementHits(@Param("steam64Id") String steam64Id);
+    @Query(value = "update Profile p set p.hits = p.hits + 1, p.name = :name where p.steam64id = :steam64Id")
+    void incrementHits(@Param("steam64Id") String steam64Id, @Param("name") String name);
 
 }

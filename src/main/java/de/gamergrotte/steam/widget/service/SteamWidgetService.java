@@ -303,7 +303,7 @@ public class SteamWidgetService {
             Profile profile = new Profile(steamId, name, 1L);
             repository.save(profile);
         } else {
-            repository.incrementHits(steamId);
+            repository.incrementHits(steamId, name);
         }
 
         Hit hit = new Hit(steamId, localDateTime, purpose, ip);
