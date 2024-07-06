@@ -5,6 +5,11 @@ import de.gamergrotte.steam.widget.config.SteamAPIConfiguration;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
+/**
+ * Represents the component responsible for creating and managing the {@link SteamWebApiClient} instance.
+ * This component is crucial for enabling communication with the Steam Web API by providing a configured client.
+ * It leverages the {@link SteamAPIConfiguration} to obtain the necessary API key for client initialization.
+ */
 @Component
 public class SteamWebAPI {
 
@@ -18,6 +23,11 @@ public class SteamWebAPI {
         init();
     }
 
+    /**
+     * Initializes the {@link SteamWebApiClient} with the API key obtained from the {@link SteamAPIConfiguration}.
+     * This method constructs a new {@link SteamWebApiClient} instance using the API key provided in the
+     * application's configuration, facilitating the interaction with the Steam Web API.
+     */
     private void init() {
         client = new SteamWebApiClient.SteamWebApiClientBuilder(configuration.getKey()).build();
     }

@@ -19,35 +19,35 @@ For the SteamId you can use the SteamID64, customURL, CommunityID.
 
 Link:
 ```
-https://steam-widget.com/widget/img?id=<SteamId>
+https://steam-widget.com/widget/img?id=<SteamId>&purpose=<Purpose>
 ```
 
 Example:
 
-https://steam-widget.com/widget/img?id=76561198120613721
+https://steam-widget.com/widget/img?id=76561198120613721&purpose=github
 
-<img src="https://steam-widget.com/widget/img?id=76561198120613721" width="350" height="75">
+<img src="https://steam-widget.com/widget/img?id=76561198120613721&purpose=github" width="350" height="75">
 
 ### HTML Version
 
 Link:
 ```
-https://steam-widget.com/widget/html?id=<SteamId>
+https://steam-widget.com/widget/html?id=<SteamId>&purpose=<Purpose>
 ```
 
 Example:
 
-https://steam-widget.com/widget/html?id=76561198120613721
+https://steam-widget.com/widget/html?id=76561198120613721&purpose=github
 
 ## Embedded
 
 HTML:
 ```HTML
-<img src="https://steam-widget.com/widget/img?id=<SteamId>" width="350" height="75">
+<img src="https://steam-widget.com/widget/img?id=<SteamId>&purpose=<Purpose>" width="350" height="75">
 ```
 
 ```HTML
-<iframe src="https://steam-widget.com/widget/html?id=<SteamId>" style="border: 0" width="325" height="75"></iframe>
+<iframe src="https://steam-widget.com/widget/html?id=<SteamId>&purpose=<Purpose>" style="border: 0" width="325" height="75"></iframe>
 ```
 
 ## Metrics
@@ -66,6 +66,19 @@ There are formats for this endpoint:
   - Outputs only the hits to this users widget
 - Accept: application/json
   - Outputs the profile metric in json format
+
+### Hit Metrics
+
+Link:
+```
+https://steam-widget.com/metric/hits?id=<Steam64Id>&purpose=<Purpose>
+```
+
+Only use the Steam64Id for getting metrics about a profile.
+
+There are formats for this endpoint:
+- Accept: \*/\*
+  - Outputs only the hits to this users widget
 
 ## Credits
 
