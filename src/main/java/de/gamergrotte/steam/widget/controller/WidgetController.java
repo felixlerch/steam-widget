@@ -3,6 +3,7 @@ package de.gamergrotte.steam.widget.controller;
 import com.lukaspradel.steamapi.core.exception.SteamApiException;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import de.gamergrotte.steam.widget.service.SteamWidgetService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -23,8 +24,8 @@ public class WidgetController {
     private SteamWidgetService steamWidgetService;
 
     @GetMapping("/widget/html")
-    public String widget(@RequestParam(name = "id") String id, Model model) throws SteamApiException {
-        Player player = steamWidgetService.getUserBySteamId(id);
+    public String widget(@RequestParam(name = "id") String id, @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose, Model model, HttpServletRequest request) throws SteamApiException {
+        Player player = steamWidgetService.getUserBySteamId(id, purpose, request.getRemoteAddr());
         model.addAttribute("profilelink", player.getProfileurl());
         model.addAttribute("profilepic", player.getAvatarmedium());
         model.addAttribute("name", player.getPersonaname());
@@ -34,8 +35,8 @@ public class WidgetController {
     }
 
     @GetMapping(value = "/widget/img", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] getWidgetImage(@RequestParam(name = "id") String id) throws SteamApiException, IOException {
-        BufferedImage image = steamWidgetService.generateWidgetImage(id);
+    public @ResponseBody byte[] getWidgetImage(@RequestParam(name = "id") String id, @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose, HttpServletRequest request) throws SteamApiException, IOException {
+        BufferedImage image = steamWidgetService.generateWidgetImage(id, purpose, request.getRemoteAddr());
         ByteArrayOutputStream imageByteStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", imageByteStream);
         byte[] imageBytes = imageByteStream.toByteArray();

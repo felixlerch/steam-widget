@@ -7,16 +7,21 @@ import com.lukaspradel.steamapi.data.json.resolvevanityurl.ResolveVanityURL;
 import com.lukaspradel.steamapi.webapi.request.GetPlayerSummariesRequest;
 import com.lukaspradel.steamapi.webapi.request.ResolveVanityUrlRequest;
 import de.gamergrotte.steam.widget.component.SteamWebAPI;
+import de.gamergrotte.steam.widget.entity.Hit;
 import de.gamergrotte.steam.widget.entity.Profile;
+import de.gamergrotte.steam.widget.repository.HitRepository;
 import de.gamergrotte.steam.widget.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +34,10 @@ public class SteamWidgetService {
     @Autowired
     private ProfileRepository repository;
 
-    public Player getUserBySteamId(String steamId) throws SteamApiException {
+    @Autowired
+    private HitRepository hitRepository;
+
+    public Player getUserBySteamId(String steamId, String purpose, String ip) throws SteamApiException {
         String id = steamId;
         if (!(id.matches("[0-9]+")) && id.length() != 17) {
             if (id.contains("https://steamcommunity.com/id/")) {
@@ -43,14 +51,14 @@ public class SteamWidgetService {
         GetPlayerSummaries playerSummaries = api.getClient().<GetPlayerSummaries> processRequest(request);
         List<Player> players = playerSummaries.getResponse().getPlayers();
         if (!players.isEmpty()) {
-            addHitToProfile(id, players.getFirst().getPersonaname());
+            addHitToProfile(id, players.getFirst().getPersonaname(), purpose, ip, LocalDateTime.now());
             return players.getFirst();
         }
         return new Player();
     }
 
-    public BufferedImage generateWidgetImage(String steamId) throws SteamApiException {
-        Player player = getUserBySteamId(steamId);
+    public BufferedImage generateWidgetImage(String steamId, String purpose, String ip) throws SteamApiException {
+        Player player = getUserBySteamId(steamId, purpose, ip);
 
         BufferedImage bufferedImage = new BufferedImage(3500, 750, BufferedImage.TYPE_INT_ARGB);
         this.drawBaseWidget(bufferedImage);
@@ -173,13 +181,17 @@ public class SteamWidgetService {
         return new BufferedImage(0, 0, BufferedImage.TYPE_INT_ARGB);
     }
 
-    public void addHitToProfile(String steamId, String name) {
+    @Async
+    public void addHitToProfile(String steamId, String name, String purpose, String ip, LocalDateTime localDateTime) {
         if (!repository.existsById(steamId)) {
             Profile profile = new Profile(steamId, name, 1L);
             repository.save(profile);
         } else {
             repository.incrementHits(steamId);
         }
+
+        Hit hit = new Hit(steamId, localDateTime, purpose, ip);
+        hitRepository.save(hit);
     }
 
     public long getHitByProfile(String steamId) {
