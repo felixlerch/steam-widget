@@ -3,10 +3,12 @@ function generateWidget() {
     const widgetContainer = document.getElementById('widgetContainer');
     if (steamId) {
         const imageUrl = `https://steam-widget.com/widget/img?id=${steamId}`;
+        const imageUrlPreview = imageUrl + '&purpose=generator';
         const htmlCode = `<img src="${imageUrl}" width="350" height="75">`;
+        const htmlCodePreview = `<img src="${imageUrlPreview}" width="350" height="75">`;
         widgetContainer.innerHTML = `
                     <div class="label">Preview:</div>
-                    <div class="code-box">${htmlCode}</div>
+                    <div class="code-box">${htmlCodePreview}</div>
                     <div class="label">Link:</div>
                     <div class="link-box">${imageUrl}</div>
                     <div class="label">HTML Code:</div>
