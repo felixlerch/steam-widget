@@ -14,7 +14,6 @@ import de.gamergrotte.steam.widget.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -38,6 +37,18 @@ public class SteamWidgetService {
     private HitRepository hitRepository;
 
     public Player getUserBySteamId(String steamId, String purpose, String ip) throws SteamApiException {
+        String id = resolveSteamId(steamId);
+        GetPlayerSummariesRequest request = new GetPlayerSummariesRequest.GetPlayerSummariesRequestBuilder(List.of(id == null ? steamId : id)).buildRequest();
+        GetPlayerSummaries playerSummaries = api.getClient().<GetPlayerSummaries> processRequest(request);
+        List<Player> players = playerSummaries.getResponse().getPlayers();
+        if (!players.isEmpty()) {
+            addHitToProfile(id, players.getFirst().getPersonaname(), purpose, ip, LocalDateTime.now());
+            return players.getFirst();
+        }
+        return new Player();
+    }
+
+    public String resolveSteamId(String steamId) throws SteamApiException {
         String id = steamId;
         if (!(id.matches("[0-9]+")) && id.length() != 17) {
             if (id.contains("https://steamcommunity.com/id/")) {
@@ -47,14 +58,7 @@ public class SteamWidgetService {
             ResolveVanityURL vanityURL = api.getClient().processRequest(request);
             id = vanityURL.getResponse().getSteamid();
         }
-        GetPlayerSummariesRequest request = new GetPlayerSummariesRequest.GetPlayerSummariesRequestBuilder(List.of(id == null ? steamId : id)).buildRequest();
-        GetPlayerSummaries playerSummaries = api.getClient().<GetPlayerSummaries> processRequest(request);
-        List<Player> players = playerSummaries.getResponse().getPlayers();
-        if (!players.isEmpty()) {
-            addHitToProfile(id, players.getFirst().getPersonaname(), purpose, ip, LocalDateTime.now());
-            return players.getFirst();
-        }
-        return new Player();
+        return id;
     }
 
     public BufferedImage generateWidgetImage(String steamId, String purpose, String ip) throws SteamApiException {
@@ -194,7 +198,7 @@ public class SteamWidgetService {
         hitRepository.save(hit);
     }
 
-    public long getHitByProfile(String steamId) {
+    public long getProfileHitByProfile(String steamId) {
         Optional<Profile> profileOptional = repository.findById(steamId);
         if (profileOptional.isPresent()) {
             return profileOptional.get().getHits();
@@ -203,6 +207,13 @@ public class SteamWidgetService {
         }
     }
 
+    public long getHitByProfileAndPurpose(String steamId, String purpose) {
+        if (purpose.isEmpty()) {
+            return hitRepository.countHitsBySteam64id(steamId);
+        } else {
+            return hitRepository.countHitsBySteam64idAndPurpose(steamId, purpose);
+        }
+    }
 
     public Profile getProfile(String steamId) {
         Optional<Profile> profileOptional = repository.findById(steamId);
