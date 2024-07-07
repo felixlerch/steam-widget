@@ -4,6 +4,7 @@ import com.lukaspradel.steamapi.core.exception.SteamApiException;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import de.gamergrotte.steam.widget.service.SteamWidgetService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -61,11 +62,14 @@ public class WidgetController {
      * @throws IOException       If there is an error during writing the image to the byte array output stream.
      */
     @GetMapping(value = "/widget/img", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] getWidgetImage(@RequestParam(name = "id") String id, @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose, HttpServletRequest request) throws SteamApiException, IOException {
+    public @ResponseBody byte[] getWidgetImage(@RequestParam(name = "id") String id, @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose, HttpServletRequest request, HttpServletResponse response) throws SteamApiException, IOException {
         BufferedImage image = steamWidgetService.generateWidgetImage(id, purpose, request.getRemoteAddr());
         ByteArrayOutputStream imageByteStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", imageByteStream);
         byte[] imageBytes = imageByteStream.toByteArray();
+
+        response.addHeader("Cache-Control", "max-age=60, must-revalidate");
+
         return imageBytes;
     }
 
