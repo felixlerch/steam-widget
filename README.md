@@ -24,9 +24,9 @@ https://steam-widget.com/widget/img?id=<SteamId>&purpose=<Purpose>
 
 Example:
 
-https://steam-widget.com/widget/img?id=76561198120613721&purpose=github
+https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo
 
-<img src="https://steam-widget.com/widget/img?id=76561198120613721&purpose=github" width="350" height="75">
+<img src="https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo" width="350" height="75">
 
 ### HTML Version
 
@@ -37,7 +37,7 @@ https://steam-widget.com/widget/html?id=<SteamId>&purpose=<Purpose>
 
 Example:
 
-https://steam-widget.com/widget/html?id=76561198120613721&purpose=github
+https://steam-widget.com/widget/html?id=lizard_darksoul&purpose=github_repo
 
 ## Embedded
 
