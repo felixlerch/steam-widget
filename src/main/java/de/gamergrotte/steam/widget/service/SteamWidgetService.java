@@ -144,7 +144,7 @@ public class SteamWidgetService {
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g.setColor(player.getAdditionalProperties().getOrDefault("gameextrainfo", "") != "" ? Color.GREEN : player.getPersonastate() == 3 ? Color.YELLOW : player.getPersonastate() == 2 ? Color.RED : player.getPersonastate() == 1 ? Color.BLUE : Color.GRAY);
+        g.setColor(player.getAdditionalProperties().getOrDefault("gameextrainfo", "") != "" ? Color.GREEN : player.getPersonastate() == 3 ? Color.YELLOW : player.getPersonastate() == 2 ? Color.RED : player.getPersonastate() == 1 ? Color.decode("#00b7ff") : Color.decode("#898989"));
         g.fillOval(3350, 600, 100, 100);
 
         g.dispose();
@@ -238,7 +238,7 @@ public class SteamWidgetService {
         g.setComposite(AlphaComposite.Clear);
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
         g.setComposite(AlphaComposite.Src);
-        g.setColor(Color.decode("#171a21"));
+        g.setColor(Color.decode("#171d25"));
         g.fillRoundRect(0, 0, image.getWidth(), image.getHeight(), 100, 100);
         g.setColor(Color.decode("#1b2838"));
         g.drawRoundRect(0, 0, image.getWidth(), image.getHeight(), 100, 100);
