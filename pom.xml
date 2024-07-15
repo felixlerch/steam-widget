@@ -10,7 +10,7 @@
     </parent>
     <groupId>de.gamergrotte</groupId>
     <artifactId>steamwidget</artifactId>
-    <version>1.4.2</version>
+    <version>1.4.3</version>
     <name>steamwidget</name>
     <description>steamwidget</description>
     <properties>
