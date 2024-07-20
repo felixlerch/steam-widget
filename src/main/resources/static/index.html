@@ -11,7 +11,13 @@
 <body>
 <div class="container">
     <h1>Steam Widget Generator</h1>
-    <p>Enter your Steam ID to generate a widget:</p>
+    <!-- OpenID Login Button moved under the h1 -->
+    <a href="/steam/login">
+        <img src="/img/steam_login-button_openid.png" alt="Login with Steam" style="margin-top: 20px; cursor: pointer;">
+    </a>
+    <br />
+    <br />
+    <p>Alternatively, provide your Steam ID to create a widget:</p>
     <input type="text" id="steamId" placeholder="Enter Steam ID">
     <button onclick="generateWidget()">Generate Widget</button>
     <div class="widget" id="widgetContainer"></div>
