@@ -13,53 +13,89 @@ https://steam-widget.com
 
 ## Usage
 
-For the SteamId you can use the SteamID64, customURL, CommunityID.
+For the SteamId, you can use the SteamID64, customURL, or CommunityID. Below are the details on how to use the service to generate widgets in both image and HTML formats.
 
 ### Image Version
 
-Link:
+To generate an image widget, use the following URL format:
 ```
-https://steam-widget.com/widget/img?id=<SteamId>&purpose=<Purpose>
+https://steam-widget.com/widget/img?id=<SteamId>&purpose=<Purpose>&width=<Width>
 ```
 
-Example:
+#### Parameters:
 
-https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo
+- **id**: The Steam ID of the user. This can be a SteamID64, customURL, or CommunityID.
+- **purpose**: The purpose for which the widget is being generated. This is used for logging and analytics.
+- **width**: The width of the generated image in pixels.
 
-<img src="https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo" width="350" height="75">
+#### Example:
+
+This URL generates an image widget for the Steam user lizard_darksoul with a purpose of github_repo and a width of 350 pixels.
+
+```
+https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350
+```
+
+<img src="https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350">
+
+#### Embedded HTML:
+
+```HTML
+<img src="https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350">
+```
+
+#### Embedded Markdown:
+
+```Markdown
+![Steam Profile](https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350)
+```
+
+#### Embedded BBCode:
+
+```BBCode
+[img]https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350[/img]
+```
 
 ### HTML Version
 
-Link:
+To generate an HTML widget, use the following URL format:
+
 ```
 https://steam-widget.com/widget/html?id=<SteamId>&purpose=<Purpose>
 ```
 
-Example:
+#### Parameters:
 
+- **id**: The Steam ID of the user. This can be a SteamID64, customURL, or CommunityID.
+- **purpose**: The purpose for which the widget is being generated. This is used for logging and analytics.
+
+#### Example:
+
+This URL generates an HTML widget for the Steam user lizard_darksoul with a purpose of github_repo.
+
+```
 https://steam-widget.com/widget/html?id=lizard_darksoul&purpose=github_repo
-
-## Embedded
-
-HTML:
-```HTML
-<img src="https://steam-widget.com/widget/img?id=<SteamId>&purpose=<Purpose>" width="350" height="75">
 ```
 
+#### Embedded HTML:
+
 ```HTML
-<iframe src="https://steam-widget.com/widget/html?id=<SteamId>&purpose=<Purpose>" style="border: 0" width="325" height="75"></iframe>
+<iframe src="https://steam-widget.com/widget/html?id=lizard_darksoul&purpose=github_repo" style="border: 0" width="325" height="75"></iframe>
 ```
 
 ## Metrics
 
 ### Profile Metrics
 
-Link:
+To get metrics about a profile, use the following URL format:
+
 ```
 https://steam-widget.com/metric?id=<Steam64Id>
 ```
 
-Only use the Steam64Id for getting metrics about a profile.
+- **id**: The Steam64Id of the user
+
+#### Formats
 
 There are formats for this endpoint:
 - Accept: \*/\*
@@ -69,12 +105,15 @@ There are formats for this endpoint:
 
 ### Hit Metrics
 
-Link:
+To get hit metrics about a profile, use the following URL format:
 ```
 https://steam-widget.com/metric/hits?id=<Steam64Id>&purpose=<Purpose>
 ```
 
-Only use the Steam64Id for getting metrics about a profile.
+- **id**: The Steam64Id of the user.
+- **purpose**: The purpose for which the widget is being generated. This is used for logging and analytics.
+
+#### Formats
 
 There are formats for this endpoint:
 - Accept: \*/\*
