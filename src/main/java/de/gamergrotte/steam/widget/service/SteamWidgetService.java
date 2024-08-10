@@ -11,6 +11,7 @@ import de.gamergrotte.steam.widget.entity.Hit;
 import de.gamergrotte.steam.widget.entity.Profile;
 import de.gamergrotte.steam.widget.repository.HitRepository;
 import de.gamergrotte.steam.widget.repository.ProfileRepository;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -284,6 +285,10 @@ public class SteamWidgetService {
         }
 
         return new BufferedImage(0, 0, BufferedImage.TYPE_INT_ARGB);
+    }
+
+    public BufferedImage scaleImage(BufferedImage image, int width) {
+        return Scalr.resize(image, width);
     }
 
     /**
