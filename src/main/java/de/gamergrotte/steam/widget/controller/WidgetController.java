@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -62,8 +63,11 @@ public class WidgetController {
      * @throws IOException       If there is an error during writing the image to the byte array output stream.
      */
     @GetMapping(value = "/widget/img", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] getWidgetImage(@RequestParam(name = "id") String id, @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose, HttpServletRequest request, HttpServletResponse response) throws SteamApiException, IOException {
+    public @ResponseBody byte[] getWidgetImage(@RequestParam(name = "id") String id, @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose, @RequestParam(name = "width", required = false, defaultValue = "0") int width, HttpServletRequest request, HttpServletResponse response) throws SteamApiException, IOException {
         BufferedImage image = steamWidgetService.generateWidgetImage(id, purpose, request.getRemoteAddr());
+        if (width > 0) {
+            image = steamWidgetService.scaleImage(image, width);
+        }
         ByteArrayOutputStream imageByteStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", imageByteStream);
         byte[] imageBytes = imageByteStream.toByteArray();
