@@ -73,7 +73,7 @@ public class SteamOpenID {
      * @param callbackUrl The absolute URL to which Steam should redirect users after they have authenticated.
      *                    This URL is where the application will receive and process the OpenID login response.
      * @return A string representing the URL of the Steam OpenID login page, to which the user should be redirected,
-     *         or {@code null} if the authentication request cannot be generated.
+     * or {@code null} if the authentication request cannot be generated.
      */
     public String login(String callbackUrl) {
         if (this.discovered == null) {
