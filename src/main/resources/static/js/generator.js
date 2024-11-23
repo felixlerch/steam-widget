@@ -91,5 +91,7 @@ function escapeHtml(input) {
 
 // Use encodeURIComponent for URL parameters
 function constructSafeUrl(steamId) {
-    return `https://steam-widget.com/widget/img?id=${encodeURIComponent(steamId)}`;
+    const baseUrl = window.location.origin;
+
+    return `${baseUrl}/widget/img?id=${encodeURIComponent(steamId)}`;
 }

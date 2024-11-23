@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Map;
 
@@ -18,16 +18,32 @@ public class SteamOpenIDController {
     private SteamOpenID steamOpenID;
 
     @GetMapping("/steam/login")
-    public void loginRedirect(HttpServletResponse httpServletResponse) {
-        httpServletResponse.setHeader("Location", steamOpenID.login("https://steam-widget.com/steam/login/callback"));
+    public void loginRedirect(HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toUriString();
+
+        httpServletResponse.setHeader("Location", steamOpenID.login(baseUrl + "/steam/login/callback"));
         httpServletResponse.setStatus(302);
     }
 
     @GetMapping("/steam/login/callback")
-    public void loginRedirect(@RequestParam Map<String,String> allParams, HttpServletRequest request, HttpServletResponse httpServletResponse) {
+    public void loginRedirect(@RequestParam Map<String, String> allParams, HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toUriString();
+
         String steamId64 = steamOpenID.verify(request.getRequestURL().toString(), request.getParameterMap());
 
-        httpServletResponse.setHeader("Location", steamOpenID.login("https://steam-widget.com/?steamId=" + steamId64));
+        if (steamId64 == null) {
+            httpServletResponse.setHeader("Location", baseUrl);
+            httpServletResponse.setStatus(302);
+            return;
+        }
+
+        httpServletResponse.setHeader("Location", baseUrl + "/?steamId=" + steamId64);
         httpServletResponse.setStatus(302);
     }
 
