@@ -39,7 +39,11 @@ function generateWidget() {
     queryParams.set('steamId', steamId);
     window.history.replaceState(null, null, "?" + queryParams.toString());
 
-    const imageUrl = constructSafeUrl(steamId);
+    const playingRightNow = document.getElementById('playingRightNow').checked;
+    const gameList = document.getElementById('gameList').value;
+    const gameListSize = document.getElementById('gameListSize').value;
+
+    const imageUrl = constructSafeUrl(steamId, playingRightNow, gameList, gameListSize);
 
     // Preview
     const previewLabel = document.createElement('div');
@@ -90,8 +94,8 @@ function escapeHtml(input) {
 }
 
 // Use encodeURIComponent for URL parameters
-function constructSafeUrl(steamId) {
+function constructSafeUrl(steamId, playingRightNow, gameList, gameListSize) {
     const baseUrl = window.location.origin;
 
-    return `${baseUrl}/widget/img?id=${encodeURIComponent(steamId)}`;
+    return `${baseUrl}/widget/img?id=${encodeURIComponent(steamId)}&playingRightNow=${encodeURIComponent(playingRightNow)}&gameList=${encodeURIComponent(gameList)}&gameListSize=${encodeURIComponent(gameListSize)}`;
 }
