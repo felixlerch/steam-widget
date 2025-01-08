@@ -30,28 +30,6 @@ public class WidgetController {
     private SteamWidgetService steamWidgetService;
 
     /**
-     * Handles requests to generate an HTML widget for a Steam user.
-     * Retrieves user data from Steam and populates the model for rendering the widget view.
-     *
-     * @param id      The Steam ID of the user for whom the widget is being generated.
-     * @param purpose Optional parameter indicating the purpose of the widget request.
-     * @param model   The Spring Model object used for passing data to the view.
-     * @param request The HttpServletRequest object, used here to get the client's IP address.
-     * @return The name of the HTML view to be rendered as the widget.
-     * @throws SteamApiException If there is an issue with accessing the Steam Web API.
-     */
-    @GetMapping("/widget/html")
-    public String widget(@RequestParam(name = "id") String id, @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose, Model model, HttpServletRequest request) throws SteamApiException {
-        Player player = steamWidgetService.getUserBySteamId(id, purpose, request.getRemoteAddr());
-        model.addAttribute("profilelink", player.getProfileurl());
-        model.addAttribute("profilepic", player.getAvatarmedium());
-        model.addAttribute("name", player.getPersonaname());
-        model.addAttribute("game", player.getAdditionalProperties().getOrDefault("gameextrainfo", ""));
-        model.addAttribute("statecolor", (player.getAdditionalProperties().getOrDefault("gameextrainfo", "") != "" ? "green" : player.getPersonastate() == 3 ? "yellow" : player.getPersonastate() == 2 ? "red" : player.getPersonastate() == 1 ? "#00b7ff" : "#898989"));
-        return "widget";
-    }
-
-    /**
      * Handles requests to generate an image widget for a Steam user.
      * Generates a BufferedImage for the user and returns it as a byte array in PNG format.
      *
