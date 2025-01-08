@@ -58,7 +58,6 @@ function generateWidget() {
     const previewImage = document.createElement('img');
     previewImage.src = `${imageUrl}&purpose=generator`;
     previewImage.width = 350;
-    previewImage.height = 75;
     previewImageBox.appendChild(previewImage);
 
     // Link
@@ -80,7 +79,7 @@ function generateWidget() {
 
     const htmlCodeBox = document.createElement('div');
     htmlCodeBox.className = 'code-box';
-    htmlCodeBox.textContent = `<img src="${imageUrl}" width="350" height="75">`;
+    htmlCodeBox.textContent = `<img src="${imageUrl}" width="350">`;
     widgetContainer.appendChild(htmlCodeBox);
 }
 
@@ -96,6 +95,21 @@ function escapeHtml(input) {
 // Use encodeURIComponent for URL parameters
 function constructSafeUrl(steamId, playingRightNow, gameList, gameListSize) {
     const baseUrl = window.location.origin;
+    const params = new URLSearchParams();
 
-    return `${baseUrl}/widget/img?id=${encodeURIComponent(steamId)}&playingRightNow=${encodeURIComponent(playingRightNow)}&gameList=${encodeURIComponent(gameList)}&gameListSize=${encodeURIComponent(gameListSize)}`;
+    params.append('id', encodeURIComponent(steamId));
+
+    if (playingRightNow !== true) {
+        params.append('playingRightNow', encodeURIComponent(playingRightNow));
+    }
+
+    if (gameList !== 'NONE') {
+        params.append('gameList', encodeURIComponent(gameList));
+    }
+
+    if (gameListSize !== '5') {
+        params.append('gameListSize', encodeURIComponent(gameListSize));
+    }
+
+    return `${baseUrl}/widget/img?${params.toString()}`;
 }

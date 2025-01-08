@@ -19,12 +19,12 @@
     <br />
     <p>Alternatively, provide your Steam ID to create a widget:</p>
     <input type="text" id="steamId" placeholder="Enter Steam ID">
-    <div>
-        <label for="playingRightNow">Show Played Games Right now</label>
+    <div class="field-container">
+        <label for="playingRightNow" class="field-label">Show Played Games Right now</label>
         <input type="checkbox" id="playingRightNow" checked="true">
     </div>
-    <div>
-        <label for="gameList">Game List</label>
+    <div class="field-container">
+        <label for="gameList" class="field-label">Game List</label>
         <select id="gameList">
             <option value="NONE">Dont Show</option>
             <option value="TOP_GAMES_TOTAL">Top Games of All Time</option>
@@ -32,10 +32,11 @@
             <option value="RECENT_GAMES">Last Played Games</option>
         </select>
     </div>
-    <div>
-        <label for="gameListSize">Game List Limit</label>
+    <div class="field-container">
+        <label for="gameListSize" class="field-label">Game List Limit</label>
         <input type="number" id="gameListSize" min="0" max="10" value="5">
     </div>
+    <br />
     <button onclick="generateWidget()">Generate Widget</button>
     <div class="widget" id="widgetContainer"></div>
 </div>
