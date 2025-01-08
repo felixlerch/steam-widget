@@ -62,15 +62,29 @@ public class WidgetController {
      * @throws IOException       If there is an error during writing the image to the byte array output stream.
      */
     @GetMapping(value = "/widget/img", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] getWidgetImage(@RequestParam(name = "id") String id, @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose, @RequestParam(name = "width", required = false, defaultValue = "0") int width, HttpServletRequest request, HttpServletResponse response) throws SteamApiException, IOException {
-        BufferedImage image = steamWidgetService.generateWidgetImage(id, purpose, request.getRemoteAddr());
+    public @ResponseBody byte[] getWidgetImage(
+            @RequestParam(name = "id") String id,
+            @RequestParam(name = "showRecentGames", required = false, defaultValue = "false") boolean showRecentGames,
+            @RequestParam(name = "recentGamesCount", required = false, defaultValue = "5") int recentGamesCount,
+            @RequestParam(name = "purpose", required = false, defaultValue = "General") String purpose,
+            @RequestParam(name = "width", required = false, defaultValue = "0") int width,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws SteamApiException, IOException {
+        /* Use the forwarded header instead of the client ip */
+        String ip = request.getHeader("X-Forwarded-For").isEmpty() ? request.getRemoteAddr() : request.getHeader("X-Forwarded-For");
+
+        /* Generate Image */
+        BufferedImage image = steamWidgetService.generateWidgetImage(id, showRecentGames, recentGamesCount, purpose, ip);
         if (width > 0) {
             image = steamWidgetService.scaleImage(image, width);
         }
+
         ByteArrayOutputStream imageByteStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", imageByteStream);
         byte[] imageBytes = imageByteStream.toByteArray();
 
+        /* Set Cache Control, so the image will be refreshed if it's behind a cache */
         response.addHeader("Cache-Control", "max-age=60, must-revalidate");
 
         return imageBytes;

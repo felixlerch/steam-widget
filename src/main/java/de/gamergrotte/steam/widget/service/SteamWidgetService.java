@@ -3,8 +3,11 @@ package de.gamergrotte.steam.widget.service;
 import com.lukaspradel.steamapi.core.exception.SteamApiException;
 import com.lukaspradel.steamapi.data.json.playersummaries.GetPlayerSummaries;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
+import com.lukaspradel.steamapi.data.json.recentlyplayedgames.Game;
+import com.lukaspradel.steamapi.data.json.recentlyplayedgames.GetRecentlyPlayedGames;
 import com.lukaspradel.steamapi.data.json.resolvevanityurl.ResolveVanityURL;
 import com.lukaspradel.steamapi.webapi.request.GetPlayerSummariesRequest;
+import com.lukaspradel.steamapi.webapi.request.GetRecentlyPlayedGamesRequest;
 import com.lukaspradel.steamapi.webapi.request.ResolveVanityUrlRequest;
 import de.gamergrotte.steam.widget.component.SteamWebAPI;
 import de.gamergrotte.steam.widget.entity.Hit;
@@ -22,6 +25,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +74,24 @@ public class SteamWidgetService {
     }
 
     /**
+     * Retrieves a list of recently played games for a given Steam ID.
+     * <p>
+     * This method sends a request to the Steam Web API to fetch the recently played games
+     * for the specified Steam ID. It constructs a {@link GetRecentlyPlayedGamesRequest} using the
+     * provided Steam ID, processes the request, and returns a {@link Game} list.
+     *
+     * @param steamId The Steam ID of the user whose recently played games are to be retrieved.
+     * @return A list of {@link Game} objects representing the recently played games.
+     * @throws SteamApiException If there is an issue with accessing the Steam Web API.
+     */
+    public List<Game> getRecentlyPlayedGames(String steamId) throws SteamApiException {
+        GetRecentlyPlayedGamesRequest request = new GetRecentlyPlayedGamesRequest.GetRecentlyPlayedGamesRequestBuilder(steamId).buildRequest();
+        GetRecentlyPlayedGames recentlyPlayedGames = api.getClient().processRequest(request);
+        recentlyPlayedGames.getResponse().getGames().sort((g1, g2) -> Math.toIntExact(g2.getPlaytime2weeks() - g1.getPlaytime2weeks()));
+        return recentlyPlayedGames.getResponse().getGames();
+    }
+
+    /**
      * Resolves the Steam ID to a numeric format if it is not already. This method handles both direct numeric Steam IDs
      * and vanity URLs (custom user URLs). If the input is a vanity URL, it uses the Steam Web API to resolve it to a numeric ID.
      *
@@ -101,17 +123,55 @@ public class SteamWidgetService {
      * @return A BufferedImage object representing the generated widget with the player's information.
      * @throws SteamApiException If there is an issue with accessing the Steam Web API.
      */
-    public BufferedImage generateWidgetImage(String steamId, String purpose, String ip) throws SteamApiException {
+    public BufferedImage generateWidgetImage(String steamId, boolean showRecentGames, int recentGamesCount, String purpose, String ip) throws SteamApiException {
         Player player = getUserBySteamId(steamId, purpose, ip);
+        List<Game> games = new ArrayList<>();
 
-        BufferedImage bufferedImage = new BufferedImage(3500, 750, BufferedImage.TYPE_INT_ARGB);
+        if (showRecentGames) {
+            games = player.getSteamid() != null ? getRecentlyPlayedGames(player.getSteamid()) : new ArrayList<>();
+            games = games.stream().limit(recentGamesCount).toList();
+        }
+
+        BufferedImage bufferedImage = new BufferedImage(3500, 750 + (games.size() * 500), BufferedImage.TYPE_INT_ARGB);
         this.drawBaseWidget(bufferedImage);
         if (player.getSteamid() != null) {
-            drawProfileImage(bufferedImage, player);
+            drawRoundImage(bufferedImage, player.getAvatarfull(), 125, 125, 500, 500);
             drawUserInformation(bufferedImage, player);
+
+            drawGameSection(bufferedImage, games);
         }
 
         return bufferedImage;
+    }
+
+    private void drawGameSection(BufferedImage image, List<Game> games) {
+        if (games.isEmpty()) {
+            return;
+        }
+
+        Graphics2D g = (Graphics2D) image.getGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g.fillRoundRect(25, 745, image.getWidth() - 50, 10, 5, 5);
+
+        for (Game game : games) {
+            String iconUrl = "https://media.steampowered.com/steamcommunity/public/images/apps/" + game.getAppid() + "/" + (game.getImgIconUrl().isEmpty() ? game.getImgLogoUrl() : game.getImgIconUrl()) + ".jpg";
+            drawRoundImage(image, iconUrl, 225,  750 + (games.indexOf(game) * 500) + 100, 300, 300);
+
+            long totalHour = game.getPlaytimeForever() / 60;
+            long totalMinute = game.getPlaytimeForever() % 60;
+            String totalPlaytime = "Total Playtime: " + totalHour + "h " + totalMinute + "m";
+
+            long recentHour = game.getPlaytime2weeks() / 60;
+            long recentMinute = game.getPlaytime2weeks() % 60;
+            String recentPlaytime = "Recent Playtime: " + recentHour + "h " + recentMinute + "m";
+
+            drawString(image, game.getName(), "ARIAL", Font.BOLD, "#ffffff", 100, 725, 750 + (games.indexOf(game) * 500) + 250);
+            drawString(image, recentPlaytime, "ARIAL", Font.PLAIN, "#c7d5e0", 75, 1725, 750 + (games.indexOf(game) * 500) + 350);
+            drawString(image, totalPlaytime, "ARIAL", Font.PLAIN, "#c7d5e0", 75, 725, 750 + (games.indexOf(game) * 500) + 350);
+        }
+
+        g.dispose();
     }
 
     /**
@@ -180,11 +240,13 @@ public class SteamWidgetService {
      * Draws the profile image of the player on the widget. The profile image is first loaded from the URL,
      * then processed to have rounded corners before being drawn onto the widget.
      *
-     * @param image  The BufferedImage object representing the widget onto which the profile image will be drawn.
-     * @param player The Player object containing the user's Steam profile information, including the URL to the profile image.
+     * @param image The BufferedImage object representing the widget onto which the profile image will be drawn.
+     * @param url The URL of the player's profile image.
+     * @param x The x-coordinate where the profile image will be drawn.
+     * @param y The y-coordinate where the profile image will be drawn.
      */
-    private void drawProfileImage(BufferedImage image, Player player) {
-        BufferedImage profileImage = this.loadImageFromURL(player.getAvatarfull());
+    private void drawRoundImage(BufferedImage image, String url, int x, int y, int width, int height) {
+        BufferedImage profileImage = this.loadImageFromURL(url);
 
         Graphics2D g = image.createGraphics();
 
@@ -192,7 +254,7 @@ public class SteamWidgetService {
 
         BufferedImage roundedProfileImage = this.makeRoundedCorner(profileImage, 500);
 
-        g.drawImage(roundedProfileImage, 125, 125, 500, 500, null);
+        g.drawImage(roundedProfileImage, x, y, width, height, null);
 
         g.dispose();
     }
@@ -245,7 +307,7 @@ public class SteamWidgetService {
         g.drawRoundRect(0, 0, image.getWidth(), image.getHeight(), 100, 100);
 
         BufferedImage logo = this.loadImageFromResources("/static/img/steam_logo.png");
-        g.drawImage(logo, image.getWidth() - 500, 100, 400, 120, Color.decode("#171a21"), null);
+        g.drawImage(logo, image.getWidth() - 500, 100, 400, 120, Color.decode("#171d25"), null);
 
         g.dispose();
     }
