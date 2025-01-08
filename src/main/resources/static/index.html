@@ -21,7 +21,7 @@
     <input type="text" id="steamId" placeholder="Enter Steam ID">
     <div>
         <label for="playingRightNow">Show Played Games Right now</label>
-        <input type="checkbox" id="playingRightNow">
+        <input type="checkbox" id="playingRightNow" checked="true">
     </div>
     <div>
         <label for="gameList">Game List</label>
@@ -34,7 +34,7 @@
     </div>
     <div>
         <label for="gameListSize">Game List Limit</label>
-        <input type="number" id="gameListSize" min="0" max="10">
+        <input type="number" id="gameListSize" min="0" max="10" value="5">
     </div>
     <button onclick="generateWidget()">Generate Widget</button>
     <div class="widget" id="widgetContainer"></div>
