@@ -6,14 +6,17 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
     background-color: #121212;
+    min-height: 100vh;
     color: #e0e0e0;
 }
 .container {
     text-align: center;
+    width: 40%;
     padding: 20px;
     background: #1e1e1e;
+    margin-top: 1%;
+    margin-bottom: 1%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     border-radius: 8px;
 }
@@ -22,7 +25,7 @@ h1 {
 }
 input[type="text"] {
     padding: 10px;
-    width: 80%;
+    width: 97%;
     margin: 10px 0;
     border: 1px solid #333;
     border-radius: 4px;
@@ -58,4 +61,34 @@ button:hover {
 .code-box {
     white-space: pre-wrap;
     font-family: monospace;
+}
+
+.field-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Adjust alignment */
+    padding: 5px;
+    width: 100%; /* Adjust width */
+    border: none;
+    border-radius: 4px;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+.field-label {
+    margin-right: 10px; /* Adjust space between label and field */
+    width: auto; /* Adjust width */
+    font-weight: bold;
+    color: #e0e0e0;
+    font-size: 0.9em;
+}
+
+#playingRightNow, #gameList, #gameListSize {
+    padding: 5px;
+    width: auto; /* Adjust width */
+    margin: 5px 0;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #333;
+    color: #e0e0e0;
 }
