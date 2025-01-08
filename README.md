@@ -13,22 +13,28 @@ https://steam-widget.com
 
 ## Usage
 
-For the SteamId, you can use the SteamID64, customURL, or CommunityID. Below are the details on how to use the service to generate widgets in both image and HTML formats.
-
-### Image Version
+For the SteamId, you can use the SteamID64, customURL, or CommunityID. Below are the details on how to use the service to generate widgets.
 
 To generate an image widget, use the following URL format:
 ```
-https://steam-widget.com/widget/img?id=<SteamId>&purpose=<Purpose>&width=<Width>
+https://steam-widget.com/widget/img?id=<SteamId>&gameList=<GameList>&gameListSize=<GameListSize>&playingRightNow=<playingRightNow>&purpose=<Purpose>&width=<Width>
 ```
 
-#### Parameters:
+### Parameters:
 
 - **id**: The Steam ID of the user. This can be a SteamID64, customURL, or CommunityID.
+- **gameList**: Show a list of games of the user in the widget
+  - *TOP_GAMES_TOTAL*: Show the top games of the user, sorted by playtime
+  - *TOP_GAMES_RECENT*: Show the top games of the user in the last 2 weeks, sorted by playtime in the last 2 weeks
+  - *RECENT_GAMES*: Show the games the user played in the last 2 weeks, sorted by the last play time
+- **gameListSize**: Limit the amount of games shown in the widget with maximum limit of 10 games
+- **playingRightNow**: Show if the user is playing a game right now
+  - TRUE: Show that the user is playing a game right now
+  - FALSE: Don't show that the user is playing a game right now
 - **purpose**: The purpose for which the widget is being generated. This is used for logging and analytics.
 - **width**: The width of the generated image in pixels.
 
-#### Example:
+### Example:
 
 This URL generates an image widget for the Steam user lizard_darksoul with a purpose of github_repo and a width of 350 pixels.
 
@@ -38,49 +44,22 @@ https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width
 
 <img src="https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350">
 
-#### Embedded HTML:
+### Embedded HTML:
 
 ```HTML
 <img src="https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350">
 ```
 
-#### Embedded Markdown:
+### Embedded Markdown:
 
 ```Markdown
 ![Steam Profile](https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350)
 ```
 
-#### Embedded BBCode:
+### Embedded BBCode:
 
 ```BBCode
 [img]https://steam-widget.com/widget/img?id=lizard_darksoul&purpose=github_repo&width=350[/img]
-```
-
-### HTML Version
-
-To generate an HTML widget, use the following URL format:
-
-```
-https://steam-widget.com/widget/html?id=<SteamId>&purpose=<Purpose>
-```
-
-#### Parameters:
-
-- **id**: The Steam ID of the user. This can be a SteamID64, customURL, or CommunityID.
-- **purpose**: The purpose for which the widget is being generated. This is used for logging and analytics.
-
-#### Example:
-
-This URL generates an HTML widget for the Steam user lizard_darksoul with a purpose of github_repo.
-
-```
-https://steam-widget.com/widget/html?id=lizard_darksoul&purpose=github_repo
-```
-
-#### Embedded HTML:
-
-```HTML
-<iframe src="https://steam-widget.com/widget/html?id=lizard_darksoul&purpose=github_repo" style="border: 0" width="325" height="75"></iframe>
 ```
 
 ## Metrics

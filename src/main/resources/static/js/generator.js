@@ -39,7 +39,11 @@ function generateWidget() {
     queryParams.set('steamId', steamId);
     window.history.replaceState(null, null, "?" + queryParams.toString());
 
-    const imageUrl = constructSafeUrl(steamId);
+    const playingRightNow = document.getElementById('playingRightNow').checked;
+    const gameList = document.getElementById('gameList').value;
+    const gameListSize = document.getElementById('gameListSize').value;
+
+    const imageUrl = constructSafeUrl(steamId, playingRightNow, gameList, gameListSize);
 
     // Preview
     const previewLabel = document.createElement('div');
@@ -54,7 +58,6 @@ function generateWidget() {
     const previewImage = document.createElement('img');
     previewImage.src = `${imageUrl}&purpose=generator`;
     previewImage.width = 350;
-    previewImage.height = 75;
     previewImageBox.appendChild(previewImage);
 
     // Link
@@ -76,7 +79,7 @@ function generateWidget() {
 
     const htmlCodeBox = document.createElement('div');
     htmlCodeBox.className = 'code-box';
-    htmlCodeBox.textContent = `<img src="${imageUrl}" width="350" height="75">`;
+    htmlCodeBox.textContent = `<img src="${imageUrl}" width="350">`;
     widgetContainer.appendChild(htmlCodeBox);
 }
 
@@ -90,8 +93,23 @@ function escapeHtml(input) {
 }
 
 // Use encodeURIComponent for URL parameters
-function constructSafeUrl(steamId) {
+function constructSafeUrl(steamId, playingRightNow, gameList, gameListSize) {
     const baseUrl = window.location.origin;
+    const params = new URLSearchParams();
 
-    return `${baseUrl}/widget/img?id=${encodeURIComponent(steamId)}`;
+    params.append('id', encodeURIComponent(steamId));
+
+    if (playingRightNow !== true) {
+        params.append('playingRightNow', encodeURIComponent(playingRightNow));
+    }
+
+    if (gameList !== 'NONE') {
+        params.append('gameList', encodeURIComponent(gameList));
+    }
+
+    if (gameListSize !== '5') {
+        params.append('gameListSize', encodeURIComponent(gameListSize));
+    }
+
+    return `${baseUrl}/widget/img?${params.toString()}`;
 }
