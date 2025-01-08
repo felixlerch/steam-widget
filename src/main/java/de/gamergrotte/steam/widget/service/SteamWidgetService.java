@@ -1,17 +1,19 @@
 package de.gamergrotte.steam.widget.service;
 
 import com.lukaspradel.steamapi.core.exception.SteamApiException;
+import com.lukaspradel.steamapi.data.json.ownedgames.GetOwnedGames;
 import com.lukaspradel.steamapi.data.json.playersummaries.GetPlayerSummaries;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
-import com.lukaspradel.steamapi.data.json.recentlyplayedgames.Game;
 import com.lukaspradel.steamapi.data.json.recentlyplayedgames.GetRecentlyPlayedGames;
 import com.lukaspradel.steamapi.data.json.resolvevanityurl.ResolveVanityURL;
+import com.lukaspradel.steamapi.webapi.request.GetOwnedGamesRequest;
 import com.lukaspradel.steamapi.webapi.request.GetPlayerSummariesRequest;
 import com.lukaspradel.steamapi.webapi.request.GetRecentlyPlayedGamesRequest;
 import com.lukaspradel.steamapi.webapi.request.ResolveVanityUrlRequest;
 import de.gamergrotte.steam.widget.component.SteamWebAPI;
 import de.gamergrotte.steam.widget.entity.Hit;
 import de.gamergrotte.steam.widget.entity.Profile;
+import de.gamergrotte.steam.widget.model.ShowedGames;
 import de.gamergrotte.steam.widget.repository.HitRepository;
 import de.gamergrotte.steam.widget.repository.ProfileRepository;
 import org.imgscalr.Scalr;
@@ -26,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,18 +80,60 @@ public class SteamWidgetService {
      * Retrieves a list of recently played games for a given Steam ID.
      * <p>
      * This method sends a request to the Steam Web API to fetch the recently played games
-     * for the specified Steam ID. It constructs a {@link GetRecentlyPlayedGamesRequest} using the
-     * provided Steam ID, processes the request, and returns a {@link Game} list.
+     * for the specified Steam ID. It constructs a {@link GetOwnedGamesRequest} using the
+     * provided Steam ID, processes the request, and returns a {@link List} of {@link com.lukaspradel.steamapi.data.json.ownedgames.Game} objects.
+     * The games are sorted by the time they were last played, in descending order.
+     * </p>
      *
      * @param steamId The Steam ID of the user whose recently played games are to be retrieved.
-     * @return A list of {@link Game} objects representing the recently played games.
+     * @return A list of {@link com.lukaspradel.steamapi.data.json.ownedgames.Game} objects representing the recently played games.
      * @throws SteamApiException If there is an issue with accessing the Steam Web API.
      */
-    public List<Game> getRecentlyPlayedGames(String steamId) throws SteamApiException {
+    public List<com.lukaspradel.steamapi.data.json.ownedgames.Game> getRecentlyPlayedGames(String steamId) throws SteamApiException {
+        GetOwnedGamesRequest request = new GetOwnedGamesRequest.GetOwnedGamesRequestBuilder(steamId).includeAppInfo(true).includePlayedFreeGames(true).buildRequest();
+        GetOwnedGames ownedGames = api.getClient().processRequest(request);
+        ownedGames.getResponse().getGames().sort((g1, g2) -> (Integer) g2.getAdditionalProperties().get("rtime_last_played") - (Integer) g1.getAdditionalProperties().get("rtime_last_played"));
+        return ownedGames.getResponse().getGames();
+    }
+
+    /**
+     * Retrieves a list of recently played games for a given Steam ID.
+     * <p>
+     * This method sends a request to the Steam Web API to fetch the recently played games
+     * for the specified Steam ID. It constructs a {@link GetRecentlyPlayedGamesRequest} using the
+     * provided Steam ID, processes the request, and returns a {@link List} of {@link com.lukaspradel.steamapi.data.json.recentlyplayedgames.Game} objects.
+     * The games are sorted by the playtime in the last two weeks, in descending order.
+     * </p>
+     *
+     * @param steamId The Steam ID of the user whose recently played games are to be retrieved.
+     * @return A list of {@link com.lukaspradel.steamapi.data.json.recentlyplayedgames.Game} objects representing the recently played games.
+     * @throws SteamApiException If there is an issue with accessing the Steam Web API.
+     */
+    public List<com.lukaspradel.steamapi.data.json.recentlyplayedgames.Game> getTopRecentlyPlayedGames(String steamId) throws SteamApiException {
         GetRecentlyPlayedGamesRequest request = new GetRecentlyPlayedGamesRequest.GetRecentlyPlayedGamesRequestBuilder(steamId).buildRequest();
         GetRecentlyPlayedGames recentlyPlayedGames = api.getClient().processRequest(request);
         recentlyPlayedGames.getResponse().getGames().sort((g1, g2) -> Math.toIntExact(g2.getPlaytime2weeks() - g1.getPlaytime2weeks()));
         return recentlyPlayedGames.getResponse().getGames();
+    }
+
+    /**
+     * Retrieves a list of top owned games for a given Steam ID.
+     * <p>
+     * This method sends a request to the Steam Web API to fetch the owned games
+     * for the specified Steam ID. It constructs a {@link GetOwnedGamesRequest} using the
+     * provided Steam ID, processes the request, and returns a {@link List} of {@link com.lukaspradel.steamapi.data.json.ownedgames.Game} objects.
+     * The games are sorted by the total playtime, in descending order.
+     * </p>
+     *
+     * @param steamId The Steam ID of the user whose owned games are to be retrieved.
+     * @return A list of {@link com.lukaspradel.steamapi.data.json.ownedgames.Game} objects representing the top owned games.
+     * @throws SteamApiException If there is an issue with accessing the Steam Web API.
+     */
+    public List<com.lukaspradel.steamapi.data.json.ownedgames.Game> getTopOwnedGames(String steamId) throws SteamApiException {
+        GetOwnedGamesRequest request = new GetOwnedGamesRequest.GetOwnedGamesRequestBuilder(steamId).includeAppInfo(true).includePlayedFreeGames(true).buildRequest();
+        GetOwnedGames ownedGames = api.getClient().processRequest(request);
+        ownedGames.getResponse().getGames().sort((g1, g2) -> Math.toIntExact(g2.getPlaytimeForever() - g1.getPlaytimeForever()));
+        return ownedGames.getResponse().getGames();
     }
 
     /**
@@ -113,30 +158,44 @@ public class SteamWidgetService {
     }
 
     /**
-     * Generates a widget image for a given Steam ID, purpose, and IP address. This method first retrieves
-     * the player's information using their Steam ID, then creates a new BufferedImage and draws the base widget,
-     * player's profile image, and user information onto it.
+     * Generates a widget image for a given Steam ID, purpose, and IP address.
+     * This method first retrieves the player's information using their Steam ID,
+     * then creates a new BufferedImage and draws the base widget, player's profile image,
+     * and user information onto it.
      *
      * @param steamId The Steam ID of the user for whom the widget is being generated.
+     * @param showGames The type of games to be shown on the widget (e.g., top recent games, top total games, recent games).
+     * @param recentGamesCount The number of recent games to be displayed on the widget.
+     * @param showPlayingRightNow A boolean indicating whether to show the game the user is currently playing.
      * @param purpose The reason for accessing the user's Steam information, used for logging.
-     * @param ip      The IP address from which the request originated, used for logging.
+     * @param ip The IP address from which the request originated, used for logging.
      * @return A BufferedImage object representing the generated widget with the player's information.
      * @throws SteamApiException If there is an issue with accessing the Steam Web API.
      */
-    public BufferedImage generateWidgetImage(String steamId, boolean showRecentGames, int recentGamesCount, String purpose, String ip) throws SteamApiException {
+    public BufferedImage generateWidgetImage(String steamId, ShowedGames showGames, int recentGamesCount, boolean showPlayingRightNow, String purpose, String ip) throws SteamApiException {
         Player player = getUserBySteamId(steamId, purpose, ip);
-        List<Game> games = new ArrayList<>();
 
-        if (showRecentGames) {
-            games = player.getSteamid() != null ? getRecentlyPlayedGames(player.getSteamid()) : new ArrayList<>();
-            games = games.stream().limit(recentGamesCount).toList();
-        }
+        List<Object> games = switch (showGames) {
+            case TOP_GAMES_RECENT -> {
+                List<Object> objects = new ArrayList<>(player.getSteamid() != null ? getTopRecentlyPlayedGames(player.getSteamid()) : new ArrayList<>());
+                yield objects.stream().limit(recentGamesCount).toList();
+            }
+            case TOP_GAMES_TOTAL -> {
+                List<Object> objects = new ArrayList<>(player.getSteamid() != null ? getTopOwnedGames(player.getSteamid()) : new ArrayList<>());
+                yield objects.stream().limit(recentGamesCount).toList();
+            }
+            case RECENT_GAMES -> {
+                List<Object> objects = new ArrayList<>(player.getSteamid() != null ? getRecentlyPlayedGames(player.getSteamid()) : new ArrayList<>());
+                yield objects.stream().limit(recentGamesCount).toList();
+            }
+            default -> new ArrayList<>();
+        };
 
         BufferedImage bufferedImage = new BufferedImage(3500, 750 + (games.size() * 500), BufferedImage.TYPE_INT_ARGB);
         this.drawBaseWidget(bufferedImage);
         if (player.getSteamid() != null) {
             drawRoundImage(bufferedImage, player.getAvatarfull(), 125, 125, 500, 500);
-            drawUserInformation(bufferedImage, player);
+            drawUserInformation(bufferedImage, player, showPlayingRightNow);
 
             drawGameSection(bufferedImage, games);
         }
@@ -144,7 +203,15 @@ public class SteamWidgetService {
         return bufferedImage;
     }
 
-    private void drawGameSection(BufferedImage image, List<Game> games) {
+    /**
+     * Draws the game section on the widget image. This method iterates through the list of games and draws
+     * each game's icon, name, and playtime information onto the widget.
+     *
+     * @param image The BufferedImage object representing the widget onto which the game section will be drawn.
+     * @param games The list of games to be displayed in the game section. Each game can be an instance of
+     *              {@link com.lukaspradel.steamapi.data.json.recentlyplayedgames.Game} or {@link com.lukaspradel.steamapi.data.json.ownedgames.Game}.
+     */
+    private void drawGameSection(BufferedImage image, List<Object> games) {
         if (games.isEmpty()) {
             return;
         }
@@ -154,21 +221,42 @@ public class SteamWidgetService {
 
         g.fillRoundRect(25, 745, image.getWidth() - 50, 10, 5, 5);
 
-        for (Game game : games) {
-            String iconUrl = "https://media.steampowered.com/steamcommunity/public/images/apps/" + game.getAppid() + "/" + (game.getImgIconUrl().isEmpty() ? game.getImgLogoUrl() : game.getImgIconUrl()) + ".jpg";
-            drawRoundImage(image, iconUrl, 225,  750 + (games.indexOf(game) * 500) + 100, 300, 300);
+        for (Object gameObject : games) {
+            if (gameObject instanceof com.lukaspradel.steamapi.data.json.recentlyplayedgames.Game game) {
+                String iconUrl = "https://media.steampowered.com/steamcommunity/public/images/apps/" + game.getAppid() + "/" + (game.getImgIconUrl().isEmpty() ? game.getImgLogoUrl() : game.getImgIconUrl()) + ".jpg";
+                drawRoundImage(image, iconUrl, 225, 750 + (games.indexOf(game) * 500) + 100, 300, 300);
 
-            long totalHour = game.getPlaytimeForever() / 60;
-            long totalMinute = game.getPlaytimeForever() % 60;
-            String totalPlaytime = "Total Playtime: " + totalHour + "h " + totalMinute + "m";
+                long totalHour = game.getPlaytimeForever() / 60;
+                long totalMinute = game.getPlaytimeForever() % 60;
+                String totalPlaytime = "Total Playtime: " + totalHour + "h " + totalMinute + "m";
 
-            long recentHour = game.getPlaytime2weeks() / 60;
-            long recentMinute = game.getPlaytime2weeks() % 60;
-            String recentPlaytime = "Recent Playtime: " + recentHour + "h " + recentMinute + "m";
+                long recentHour = game.getPlaytime2weeks() / 60;
+                long recentMinute = game.getPlaytime2weeks() % 60;
+                String recentPlaytime = "Recent Playtime: " + recentHour + "h " + recentMinute + "m";
 
-            drawString(image, game.getName(), "ARIAL", Font.BOLD, "#ffffff", 100, 725, 750 + (games.indexOf(game) * 500) + 250);
-            drawString(image, recentPlaytime, "ARIAL", Font.PLAIN, "#c7d5e0", 75, 1725, 750 + (games.indexOf(game) * 500) + 350);
-            drawString(image, totalPlaytime, "ARIAL", Font.PLAIN, "#c7d5e0", 75, 725, 750 + (games.indexOf(game) * 500) + 350);
+                drawString(image, game.getName(), "ARIAL", Font.BOLD, "#ffffff", 100, 725, 750 + (games.indexOf(game) * 500) + 250);
+                drawString(image, recentPlaytime, "ARIAL", Font.PLAIN, "#c7d5e0", 75, 1725, 750 + (games.indexOf(game) * 500) + 350);
+                drawString(image, totalPlaytime, "ARIAL", Font.PLAIN, "#c7d5e0", 75, 725, 750 + (games.indexOf(game) * 500) + 350);
+            }
+            else if (gameObject instanceof com.lukaspradel.steamapi.data.json.ownedgames.Game game) {
+                String iconUrl = "https://media.steampowered.com/steamcommunity/public/images/apps/" + game.getAppid() + "/" + (game.getImgIconUrl().isEmpty() ? game.getImgLogoUrl() : game.getImgIconUrl()) + ".jpg";
+                drawRoundImage(image, iconUrl, 225, 750 + (games.indexOf(game) * 500) + 100, 300, 300);
+
+                long totalHour = game.getPlaytimeForever() / 60;
+                long totalMinute = game.getPlaytimeForever() % 60;
+                String totalPlaytime = "Total Playtime: " + totalHour + "h " + totalMinute + "m";
+
+                if (game.getAdditionalProperties().containsKey("playtime_2weeks")) {
+                    int recentHour = (Integer) game.getAdditionalProperties().get("playtime_2weeks") / 60;
+                    int recentMinute = (Integer) game.getAdditionalProperties().get("playtime_2weeks") % 60;
+                    String recentPlaytime = "Recent Playtime: " + recentHour + "h " + recentMinute + "m";
+
+                    drawString(image, recentPlaytime, "ARIAL", Font.PLAIN, "#c7d5e0", 75, 1725, 750 + (games.indexOf(game) * 500) + 350);
+                }
+
+                drawString(image, game.getName(), "ARIAL", Font.BOLD, "#ffffff", 100, 725, 750 + (games.indexOf(game) * 500) + 250);
+                drawString(image, totalPlaytime, "ARIAL", Font.PLAIN, "#c7d5e0", 75, 725, 750 + (games.indexOf(game) * 500) + 350);
+            }
         }
 
         g.dispose();
@@ -182,8 +270,8 @@ public class SteamWidgetService {
      * @param image  The BufferedImage object representing the widget onto which the user information will be drawn.
      * @param player The Player object containing the user's Steam profile information.
      */
-    private void drawUserInformation(BufferedImage image, Player player) {
-        if (!player.getAdditionalProperties().getOrDefault("gameextrainfo", "").toString().isEmpty()) {
+    private void drawUserInformation(BufferedImage image, Player player, boolean showPlayingRightNow) {
+        if (showPlayingRightNow && !player.getAdditionalProperties().getOrDefault("gameextrainfo", "").toString().isEmpty()) {
             this.drawString(image, player.getPersonaname(), "ARIAL", Font.BOLD, "#ffffff", 200, 725, 350);
             this.drawString(image, player.getAdditionalProperties().getOrDefault("gameextrainfo", "").toString(), "ARIAL", Font.PLAIN, "#c7d5e0", 150, 725, 550);
         } else {
